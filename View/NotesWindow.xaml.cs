@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -61,7 +62,44 @@ namespace EverNoteCloneWPF.View
 
         private void BoldBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            bool isBtnChecked = ((ToggleButton) sender).IsChecked ?? false;
+            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty,
+                isBtnChecked ? FontWeights.Bold : FontWeights.Normal);
+        }
+
+        private void ContentRichTextBox_OnSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            var selectedWeight = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontWeightProperty);
+            BoldBtn.IsChecked = (selectedWeight != DependencyProperty.UnsetValue) && selectedWeight.Equals(FontWeights.Bold);
+
+            var selectedStyle = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontStyleProperty);
+            ItalicBtn.IsChecked = (selectedStyle != DependencyProperty.UnsetValue) && selectedStyle.Equals(FontStyles.Italic);
+
+            var selectedDecoration = ContentRichTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
+            UnderLineBtn.IsChecked = (selectedDecoration != DependencyProperty.UnsetValue) && selectedDecoration.Equals(TextDecorations.Underline);
+        }
+
+        private void ItalicBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            bool isBtnChecked = ((ToggleButton) sender).IsChecked ?? false;
+            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontStyleProperty,
+                isBtnChecked ? FontStyles.Italic : FontStyles.Normal);
+        }
+
+        private void UnderLineBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            bool isBtnChecked = ((ToggleButton) sender).IsChecked ?? false;
+            if (isBtnChecked)
+            {
+                ContentRichTextBox.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
+            }
+            else
+            {
+                ((TextDecorationCollection) ContentRichTextBox.Selection.GetPropertyValue(
+                        Inline.TextDecorationsProperty))
+                    .TryRemove(TextDecorations.Underline, out var textDecorations);
+                ContentRichTextBox.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, textDecorations);
+            }
         }
     }
 }
