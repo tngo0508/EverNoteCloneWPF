@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 
 namespace EverNoteCloneWPF.View
 {
@@ -29,9 +31,25 @@ namespace EverNoteCloneWPF.View
             Application.Current.Shutdown();
         }
 
-        private void SpeechButton_OnClick(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Go to https://portal.azure.com/ and create the speech resource to get region and key
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void SpeechButton_OnClick(object sender, RoutedEventArgs e)
         {
+            string region = "westus";
+            string key = "49556d62f56c4c038fc49e6871b31e67";
 
+            var speechConfig = SpeechConfig.FromSubscription(key, region);
+            using (var audioConfig = AudioConfig.FromDefaultMicrophoneInput())
+            {
+                using (var recognizer = new SpeechRecognizer(speechConfig))
+                {
+                    var result = await recognizer.RecognizeOnceAsync();
+                    ContentRichTextBox.Document.Blocks.Add(new Paragraph(new Run(result.Text)));
+                }
+            }
         }
 
         private void ContentRichTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
