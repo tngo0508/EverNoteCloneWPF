@@ -25,6 +25,12 @@ namespace EverNoteCloneWPF.View
         public NotesWindow()
         {
             InitializeComponent();
+
+            var fontFamilites = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
+            FontFamilyComboBox.ItemsSource = fontFamilites;
+
+            List<double> fontSizes = new List<double>() {8, 9, 10, 11, 12, 14, 16, 28, 30};
+            FontSizeComboBox.ItemsSource = fontSizes;
         }
 
         private void MenuItem_OnClick(object sender, RoutedEventArgs e)
@@ -77,6 +83,10 @@ namespace EverNoteCloneWPF.View
 
             var selectedDecoration = ContentRichTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
             UnderLineBtn.IsChecked = (selectedDecoration != DependencyProperty.UnsetValue) && selectedDecoration.Equals(TextDecorations.Underline);
+
+            FontFamilyComboBox.SelectedItem = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontFamilyProperty);
+            FontSizeComboBox.Text = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontSizeProperty).ToString();
+
         }
 
         private void ItalicBtn_OnClick(object sender, RoutedEventArgs e)
@@ -100,6 +110,19 @@ namespace EverNoteCloneWPF.View
                     .TryRemove(TextDecorations.Underline, out var textDecorations);
                 ContentRichTextBox.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty, textDecorations);
             }
+        }
+
+        private void FontFamilyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FontFamilyComboBox.SelectionBoxItem != null)
+            {
+                ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, FontFamilyComboBox.SelectedItem);
+            }
+        }
+
+        private void FontSizeComboBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, FontSizeComboBox.Text);
         }
     }
 }
