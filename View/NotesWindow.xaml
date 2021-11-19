@@ -1,0 +1,60 @@
+﻿<Window x:Class="EverNoteCloneWPF.View.NotesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EverNoteCloneWPF.View"
+        xmlns:vm="clr-namespace:EverNoteCloneWPF.ViewModel"
+        mc:Ignorable="d"
+        Title="NotesWindow" Height="450" Width="602" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <vm:NotesVM x:Key="vm" />
+    </Window.Resources>
+
+    <DockPanel DataContext="{StaticResource vm}">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="New Notebooks" Command="{Binding NewNoteBookCommand}"/>
+                <MenuItem Header="New Note" Command="{Binding NewNoteCommand}"
+                          CommandParameter="{Binding SelectedNotebook}" />
+                <Separator />
+                <MenuItem Header="Exit" Click="MenuItem_OnClick"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusTextBlock"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+        <ListView DockPanel.Dock="Left"
+                  Width="140"
+                  ItemsSource="{Binding Notebooks}"
+                  SelectedItem="{Binding SelectedNotebook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ListView DockPanel.Dock="Left"
+                  Width="140"
+                  ItemsSource="{Binding Notes}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}"></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Content="Speech" Click="SpeechButton_OnClick" />
+                <Button x:Name="BoldBtn" Click="BoldBtn_OnClick">
+                    <TextBlock Text="B" FontWeight="Bold" ></TextBlock>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid>
+            <RichTextBox x:Name="ContentRichTextBox" TextChanged="ContentRichTextBox_OnTextChanged"/>
+        </Grid>
+    </DockPanel>
+</Window>
